@@ -100,7 +100,6 @@ const SelectTheme = (props) => {
       translateChoice={false}
       choices={themeChoices}
       onChange={(event) => {
-        console.log('yo', event.target.value)
         if (event.target.value === helpKey) {
           openInNewTab(docsUrl('/docs/developers/creating-themes/'))
           return
