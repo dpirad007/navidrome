@@ -18,6 +18,7 @@ import {
 } from 'react-admin'
 import { makeStyles } from '@material-ui/core/styles'
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline'
+import useMediaQuery from '@material-ui/core/useMediaQuery'
 import { changeTheme, setNotificationsState } from '../actions'
 import themes from '../themes'
 import { docsUrl } from '../utils'
@@ -76,14 +77,20 @@ const SelectLanguage = (props) => {
 const SelectTheme = (props) => {
   const translate = useTranslate()
   const dispatch = useDispatch()
+  const prefersLightMode = useMediaQuery('(prefers-color-scheme: light)')
   const currentTheme = useSelector((state) => state.theme)
-  const themeChoices = Object.keys(themes).map((key) => {
+  let themeChoices = Object.keys(themes).map((key) => {
     return { id: key, name: themes[key].themeName }
+  })
+  themeChoices.push({
+    id: 'AutoTheme',
+    name: 'Auto',
   })
   themeChoices.push({
     id: helpKey,
     name: <HelpMsg caption={'Create your own'} />,
   })
+
   return (
     <SelectInput
       {...props}
@@ -93,8 +100,14 @@ const SelectTheme = (props) => {
       translateChoice={false}
       choices={themeChoices}
       onChange={(event) => {
+        console.log('yo', event.target.value)
         if (event.target.value === helpKey) {
           openInNewTab(docsUrl('/docs/developers/creating-themes/'))
+          return
+        }
+        if (event.target.value === 'Auto') {
+          if (prefersLightMode) dispatch(changeTheme('LightTheme'))
+          else dispatch(changeTheme('DarkTheme'))
           return
         }
         dispatch(changeTheme(event.target.value))
